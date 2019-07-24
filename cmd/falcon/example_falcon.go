@@ -1,4 +1,4 @@
-package main
+package falcon
 
 import (
 	"flag"
@@ -9,17 +9,19 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/docker/docker/client"
+	"github.com/soopsio/eru-metric/falcon"
 	"github.com/soopsio/eru-metric/metric"
-	"github.com/soopsio/eru-metric/statsd"
 )
 
 func main() {
 	var dockerAddr string
 	var transferAddr string
+	var certDir string
 	var debug bool
 	flag.BoolVar(&debug, "DEBUG", false, "enable debug")
 	flag.StringVar(&dockerAddr, "d", "tcp://192.168.99.100:2376", "docker daemon addr")
 	flag.StringVar(&transferAddr, "t", "10.200.8.37:8433", "transfer addr")
+	flag.StringVar(&certDir, "c", "/root/.docker", "cert files dir")
 	flag.Parse()
 	if flag.NArg() < 1 {
 		fmt.Println("need at least one container id")
@@ -29,10 +31,10 @@ func main() {
 		log.SetLevel(log.DebugLevel)
 	}
 
-	cli, _ := client.NewEnvClient()
+	cli, _ := client.NewClientWithOpts()
 
 	metric.SetGlobalSetting(cli, 2, 3, "vnbe", "eth0")
-	client := statsd.CreateStatsDClient(transferAddr)
+	client := falcon.CreateFalconClient(transferAddr, 5*time.Millisecond)
 	ctx := context.Background()
 
 	for i := 0; i < flag.NArg(); i++ {
@@ -47,7 +49,8 @@ func main() {
 }
 
 func start_watcher(client metric.Remote, cid string, pid int) {
-	serv := metric.CreateMetric(time.Duration(5)*time.Second, client, "a.b", fmt.Sprintf("test_%s", cid[:7]))
+	serv := metric.CreateMetric(time.Duration(5)*time.Second, client, "a=b,b=c", fmt.Sprintf("test_%s", cid))
+	defer serv.Client.Close()
 	if err := serv.InitMetric(cid, pid); err != nil {
 		fmt.Println("failed", err)
 		return
