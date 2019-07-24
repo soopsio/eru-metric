@@ -8,9 +8,9 @@ import (
 	"golang.org/x/net/context"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/docker/engine-api/client"
-	"github.com/projecteru/eru-metric/metric"
-	"github.com/projecteru/eru-metric/statsd"
+	"github.com/docker/docker/client"
+	"github.com/soopsio/eru-metric/metric"
+	"github.com/soopsio/eru-metric/statsd"
 )
 
 func main() {
@@ -43,8 +43,7 @@ func main() {
 			go start_watcher(client, c.ID, c.State.Pid)
 		}
 	}
-	for {
-	}
+	select {}
 }
 
 func start_watcher(client metric.Remote, cid string, pid int) {
