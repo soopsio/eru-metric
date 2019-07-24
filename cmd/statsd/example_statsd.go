@@ -1,4 +1,4 @@
-package statsd
+package main
 
 import (
 	"flag"
@@ -18,8 +18,8 @@ func main() {
 	var transferAddr string
 	var debug bool
 	flag.BoolVar(&debug, "DEBUG", false, "enable debug")
-	flag.StringVar(&dockerAddr, "d", "tcp://192.168.99.100:2376", "docker daemon addr")
-	flag.StringVar(&transferAddr, "t", "10.200.8.37:8433", "transfer addr")
+	flag.StringVar(&dockerAddr, "d", "tcp://0.0.0.0:2376", "docker daemon addr")
+	flag.StringVar(&transferAddr, "t", "0.0.0.0:8433", "transfer addr")
 	flag.Parse()
 	if flag.NArg() < 1 {
 		fmt.Println("need at least one container id")
@@ -29,7 +29,7 @@ func main() {
 		log.SetLevel(log.DebugLevel)
 	}
 
-	cli, _ := client.NewEnvClient()
+	cli, _ := client.NewClientWithOpts()
 
 	metric.SetGlobalSetting(cli, 2, 3, "vnbe", "eth0")
 	client := statsd.CreateStatsDClient(transferAddr)
