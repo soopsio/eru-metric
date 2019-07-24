@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/docker/engine-api/types"
+	"github.com/docker/docker/api/types"
 	"golang.org/x/net/context"
 
 	log "github.com/Sirupsen/logrus"
@@ -49,11 +49,13 @@ func (self *Metric) Exit() {
 func (self *Metric) UpdateStats(cid string) (map[string]uint64, error) {
 	info := map[string]uint64{}
 	ctx := context.Background()
-	resp, err := g.client.ContainerStats(ctx, cid, false)
+	body, err := g.client.ContainerStats(ctx, cid, false)
 	if err != nil {
 		log.Errorf("Get stats failed %s %s", cid[:12], err)
 		return info, err
 	}
+
+	resp := body.Body
 	defer resp.Close()
 	data, err := ioutil.ReadAll(resp)
 	if err != nil {

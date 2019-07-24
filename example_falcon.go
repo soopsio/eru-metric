@@ -8,9 +8,9 @@ import (
 	"golang.org/x/net/context"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/docker/engine-api/client"
-	"github.com/projecteru/eru-metric/falcon"
-	"github.com/projecteru/eru-metric/metric"
+	"github.com/docker/docker/client"
+	"github.com/soopsio/eru-metric/falcon"
+	"github.com/soopsio/eru-metric/metric"
 )
 
 func main() {
@@ -31,7 +31,7 @@ func main() {
 		log.SetLevel(log.DebugLevel)
 	}
 
-	cli, _ := client.NewEnvClient()
+	cli, _ := client.NewClientWithOpts()
 
 	metric.SetGlobalSetting(cli, 2, 3, "vnbe", "eth0")
 	client := falcon.CreateFalconClient(transferAddr, 5*time.Millisecond)
@@ -45,8 +45,7 @@ func main() {
 			go start_watcher(client, c.ID, c.State.Pid)
 		}
 	}
-	for {
-	}
+	select {}
 }
 
 func start_watcher(client metric.Remote, cid string, pid int) {

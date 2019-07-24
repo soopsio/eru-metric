@@ -1,7 +1,7 @@
 package metric
 
 import (
-	"io"
+	"github.com/docker/docker/api/types"
 	"os"
 	"sync"
 	"time"
@@ -10,7 +10,7 @@ import (
 )
 
 type DockerClient interface {
-	ContainerStats(ctx context.Context, containerID string, stream bool) (io.ReadCloser, error)
+	ContainerStats(ctx context.Context, containerID string, stream bool) (types.ContainerStats, error)
 }
 
 type Remote interface {
