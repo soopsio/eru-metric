@@ -35,14 +35,14 @@ func main() {
 	client := statsd.CreateStatsDClient(transferAddr)
 	ctx := context.Background()
 
-	for i := 0; i < flag.NArg(); i++ {
-		if c, err := cli.ContainerInspect(ctx, flag.Arg(i)); err != nil {
-			fmt.Println(flag.Arg(i), err)
-			continue
-		} else {
-			go start_watcher(client, c.ID, c.State.Pid)
-		}
-	}
+	//for i := 0; i < flag.NArg(); i++ {
+	//	if c, err := cli.ContainerInspect(ctx, flag.Arg(i)); err != nil {
+	//		fmt.Println(flag.Arg(i), err)
+	//		continue
+	//	} else {
+	//		go start_watcher(client, c.ID, c.State.Pid)
+	//	}
+	//}
 	select {}
 }
 
